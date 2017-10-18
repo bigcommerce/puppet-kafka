@@ -42,6 +42,14 @@ class kafka::params {
   -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=9993'
   $consumer_log4j_opts = $broker_log4j_opts
 
+  $connect_heap_opts = '-Xmx1G -Xms256M'
+  $connect_jmx_opts = '-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false \
+  -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=9994'
+  $connect_log4j_opts = '-Dlog4j.configuration=file:/opt/kafka/config/connect-log4j.properties'
+  $connect_opts = ''
+  $connect_service_install = true
+  $connect_service_ensure = 'running'
+
   $service_restart = true
 
   #http://kafka.apache.org/documentation.html#brokerconfigs
@@ -304,6 +312,79 @@ class kafka::params {
     'ssl.endpoint.identification.algorithm'    => '',
     'ssl.keymanager.algorithm'                 => 'SunX509',
     'ssl.trustmanager.algorithm'               => 'PKIX',
+  }
+
+  #https://kafka.apache.org/documentation/#connectconfigs
+  $connect_mode = 'distributed'
+  $connect_config_defaults = {
+    'config.storage.topic'                      => '',
+    'group.id'                                  => '',
+    'key.converter'                             => '',
+    'key.converter.schemas.enable'              => false,
+    'offset.storage.topic'                      => '',
+    'status.storage.topic'                      => '',
+    'value.converter'                           => '',
+    'value.converter.schemas.enable'            => false,
+    'internal.key.converter'                    => 'org.apache.kafka.connect.json.JsonConverter',
+    'internal.key.converter.schemas.enable'     => false,
+    'internal.value.converter'                  => 'org.apache.kafka.connect.json.JsonConverter',
+    'internal.value.converter.schemas.enable'   => false,
+    'bootstrap.servers'                         => 'localhost:9092',
+    'heartbeat.interval.ms'                     => 3000,
+    'rebalance.timeout.ms'                      => 60000,
+    'session.timeout.ms'                        => 10000,
+    'ssl.key.password'                          => '',
+    'ssl.keystore.location'                     => '',
+    'ssl.keystore.password'                     => '',
+    'ssl.truststore.location'                   => '',
+    'ssl.truststore.password'                   => '',
+    'connections.max.idle.ms'                   => 540000,
+    'receive.buffer.bytes'                      => 32768,
+    'request.timeout.ms'                        => 40000,
+    'sasl.jaas.config'                          => '',
+    'sasl.kerberos.service.name'                => '',
+    'sasl.mechanism'                            => 'GSSAPI',
+    'security.protocol'                         => 'PLAINTEXT',
+    'send.buffer.bytes'                         => 131072,
+    'ssl.enabled.protocols'                     => 'TLSv1.2,TLSv1.1,TLSv1',
+    'ssl.keystore.type'                         => 'JKS',
+    'ssl.protocol'                              => 'TLS',
+    'ssl.provider'                              => '',
+    'ssl.truststore.type'                       => 'JKS',
+    'worker.sync.timeout.ms'                    => 3000,
+    'worker.unsync.backoff.ms'                  => 300000,
+    'access.control.allow.methods'              => '',
+    'access.control.allow.origin'               => '',
+    'client.id'                                 => '',
+    'config.storage.replication.factor'         => 3,
+    'metadata.max.age.ms'                       => 300000,
+    'metric.reporters'                          => '',
+    'metrics.num.samples'                       => 2,
+    'metrics.sample.window.ms'                  => 30000,
+    'offset.flush.interval.ms'                  => 60000,
+    'offset.flush.timeout.ms'                   => 5000,
+    'offset.storage.partitions'                 => 25,
+    'offset.storage.replication.factor'         => 3,
+    'plugin.path'                               => '',
+    'reconnect.backoff.max.ms'                  => 1000,
+    'reconnect.backoff.ms'                      => 50,
+    'rest.advertised.host.name'                 => '',
+    'rest.advertised.port'                      => '',
+    'rest.host.name'                            => '',
+    'rest.port'                                 => 8083,
+    'retry.backoff.ms'                          => 100,
+    'sasl.kerberos.kinit.cmd'                   => '/usr/bin/kinit',
+    'sasl.kerberos.min.time.before.relogin'     => 60000,
+    'sasl.kerberos.ticket.renew.jitter'         => 0.05,
+    'sasl.kerberos.ticket.renew.window.factor'  => 0.8,
+    'ssl.cipher.suites'                         => '',
+    'ssl.endpoint.identification.algorithm'     => '',
+    'ssl.keymanager.algorithm'                  => 'SunX509',
+    'ssl.secure.random.implementation'          => '',
+    'ssl.trustmanager.algorithm'                => 'PKIX',
+    'status.storage.partitions'                 => 5,
+    'status.storage.replication.factor'         => 3,
+    'task.shutdown.graceful.timeout.ms'         => 5000,
   }
 
   #https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=27846330

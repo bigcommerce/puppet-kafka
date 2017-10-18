@@ -59,6 +59,30 @@ PRODUCER_INPUT="<%= @input %>"
 
 export KAFKA_JMX_OPTS="<%= @producer_jmx_opts %>"
 export KAFKA_LOG4J_OPTS="<%= @producer_log4j_opts %>"
+
+<%- when 'kafka-connect-standalone' -%>
+PGREP_PATTERN=kafka.connect.cli.ConnectStandalone
+
+DAEMON="/opt/kafka/bin/connect-standalone.sh"
+DAEMON_OPTS="/opt/kafka/config/connect-standalone.properties <%= @connector_config_files.join(' ') %>"
+
+export KAFKA_HEAP_OPTS="<%= @heap_opts %>"
+export KAFKA_JMX_OPTS="<%= @connect_jmx_opts %>"
+export KAFKA_LOG4J_OPTS="<%= @connect_log4j_opts %>"
+
+export KAFKA_OPTS="<%= @opts %>"
+
+<%- when 'kafka-connect-distributed' -%>
+PGREP_PATTERN=kafka.connect.cli.ConnectDistributed
+
+DAEMON="/opt/kafka/bin/connect-distributed.sh"
+DAEMON_OPTS="/opt/kafka/config/connect-distributed.properties"
+
+export KAFKA_HEAP_OPTS="<%= @heap_opts %>"
+export KAFKA_JMX_OPTS="<%= @connect_jmx_opts %>"
+export KAFKA_LOG4J_OPTS="<%= @connect_log4j_opts %>"
+
+export KAFKA_OPTS="<%= @opts %>"
 <%- end -%>
 
 if [ -f /etc/default/kafka ]; then
@@ -81,7 +105,12 @@ start() {
     return $?
   fi
 
+  <%- if @service_name == "kafka-connect-distributed" -%>
+  /bin/su "$KAFKA_USER" -c "KAFKA_JMX_OPTS=\"$KAFKA_JMX_OPTS\" $DAEMON $DAEMON_OPTS >/dev/null 2>&1 &"
+  <%- else -%>
   /bin/su "$KAFKA_USER" -c "KAFKA_JMX_OPTS=\"$KAFKA_JMX_OPTS\" $DAEMON $DAEMON_OPTS<%- if @service_name == 'kafka-producer' -%> $PRODUCER_INPUT<%- end -%> >/dev/null 2>&1 &"
+  <%- end -%>
+
   sleep 2
   PID=`pgrep -f "$PGREP_PATTERN"`
   if [ -z "$PID" ]; then
